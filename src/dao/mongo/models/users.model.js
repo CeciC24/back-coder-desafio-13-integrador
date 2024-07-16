@@ -4,11 +4,7 @@ const { Schema } = mongoose
 const collection = 'users'
 
 const userSchema = new Schema({
-	first_name: {
-		type: String,
-		required: true,
-		index: true,
-	},
+	first_name: { type: String, required: true, index: true },
 	last_name: { type: String, required: true },
 	email: { type: String, unique: true },
 	age: { type: Number, required: true },
@@ -17,7 +13,7 @@ const userSchema = new Schema({
 		type: mongoose.Schema.Types.ObjectId,
 		ref: 'carts',
 	},
-	role: { type: String, default: 'user' },
+	role: { type: String, enum: ['user', 'premium'], default: 'user' },
 })
 
 const UsersModel = mongoose.model(collection, userSchema)

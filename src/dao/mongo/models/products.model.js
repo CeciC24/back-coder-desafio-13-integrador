@@ -5,6 +5,7 @@ const { Schema } = mongoose
 const collection = 'products'
 
 const productSchema = new Schema({
+	owner: { type: String, default: 'admin' },
 	status: { type: Boolean, default: true },
 	title: { type: String, require: true },
 	description: { type: String, require: true },

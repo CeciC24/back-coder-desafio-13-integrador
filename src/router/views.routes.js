@@ -5,7 +5,7 @@ import ProductsModel from '../dao/mongo/models/products.model.js'
 import CartsModel from '../dao/mongo/models/carts.model.js'
 import paginateFormat from '../paginateFormat.js'
 import { requireAuth, redirectIfLoggedIn } from '../middlewares/auth.middleware.js'
-import { passportCall } from '../utils/jwt.utils.js'
+import { passportCall, validateToken } from '../utils/jwt.utils.js'
 
 const router = Router()
 
@@ -126,7 +126,6 @@ router.get('/carts/:cid', passportCall('current'), async (req, res) => {
 	}
 })
 
-
 router.get('/register', passportCall('current'), redirectIfLoggedIn, (req, res) => {
 	res.render('register')
 })
@@ -154,12 +153,48 @@ router.get('/', passportCall('current'), requireAuth, (req, res) => {
 })
 
 router.get('/restore', passportCall('current'), (req, res) => {
-	res.render('restore', { 
-		title: 'Restore',
+	res.render('restore', {
+		title: 'Restore password',
 		style: '../../css/restore.css',
 		auth: req.isAuthenticated(),
 	})
 })
 
+router.get('/reset-password/:token', passportCall('current'), (req, res, next) => {
+	try {
+		const success = req.query.success
+		const error = req.query.error
+
+		const { token } = req.params
+
+		const decodedToken = validateToken(token)
+		if (!decodedToken) return res.redirect('/forgot-password?error=token')
+
+		res.render('resetPassword', {
+			title: 'Reset password',
+			style: '../../css/reset.css',
+			auth: req.isAuthenticated(),
+			success,
+			error,
+		})
+	} catch (error) {
+		next(error)
+	}
+})
+
+router.get('/forgot-password', passportCall('current'), (req, res, next) => {
+	try {
+		const error = req.query.error
+	
+		res.render('forgotPassword', {
+			title: 'Forgot password',
+			style: '../../css/forgot.css',
+			auth: req.isAuthenticated(),
+			error,
+		})
+	} catch (error) {
+		next(error)
+	}
+})
 
 export default router

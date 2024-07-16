@@ -5,6 +5,7 @@ import UserManager from '../mongo/users.mongo.js'
 import config from '../../config/environment.config.js'
 import CustomError from '../../utils/customError.utils.js'
 import ErrorTypes from '../../utils/errorTypes.utils.js'
+import { sendSimpleMail } from './email.service.js'
 
 const userMngr = new UserManager()
 
@@ -107,5 +108,58 @@ export default class AuthManager {
 		const updatedUser = await userMngr.update(user._id, { password: password })
 		const token = generateToken(updatedUser)
 		return { message: 'Contraseña restaurada', token }
+	}
+
+	async forgot({ email }) {
+		if (!email) {
+			CustomError.createError({
+				name: 'Error restablecer contraseña',
+				message: 'Faltan datos',
+				code: ErrorTypes.ERROR_DATA,
+				cause: 'No se han enviado todos los datos necesarios',
+			})
+		}
+
+		const user = await UsersModel.findOne({ email })
+		if (!user) {
+			CustomError.createError({
+				name: 'Error al restablecer contraseña',
+				code: ErrorTypes.ERROR_DATA,
+				cause: 'El correo no se encuentra registrado',
+			})
+		}
+
+		const token = generateToken(user)
+		const resetLink = `http://${config.host}:${config.port}/reset-password/${token}`
+
+		const correoOptions = {
+			from: config.emailUser,
+			to: user.email,
+			subject: 'Recuperación de contraseña',
+			html: `
+				Hola ${user.first_name},
+				<p>Por favor, haz clic en el siguiente enlace para recuperar tu contraseña:</p> <a href="${resetLink}">Recuperar contraseña</a>
+				<p>Si no solicitaste recuperar tu contraseña, por favor ignora este mensaje.</p>
+			`,
+		}
+
+		await sendSimpleMail(correoOptions)
+
+		return { message: 'Email de restablecimiento de contraseña enviado', token }
+	}
+
+	async reset({ email, password }) {
+		if (!email || !password) {
+			CustomError.createError({
+				name: 'Error al restablecer contraseña',
+				message: 'Faltan datos',
+				code: ErrorTypes.ERROR_DATA,
+				cause: 'No se han enviado todos los datos necesarios',
+			})
+		}
+
+		const updatedUser = await userMngr.update(user._id, { password: password })
+		const token = generateToken(updatedUser)
+		return { message: 'Contraseña restablecida', token }
 	}
 }

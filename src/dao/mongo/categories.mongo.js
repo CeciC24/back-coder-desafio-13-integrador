@@ -1,6 +1,8 @@
 import CategoriesRepository from '../../repositories/categories.repository.js'
 import CustomError from '../../utils/customError.utils.js'
 import ErrorTypes from '../../utils/errorTypes.utils.js'
+import Validate from '../../utils/validate.utils.js'
+import CategoryDTO from '../DTOs/category.dto.js'
 
 export default class CategoryManager {
 	constructor() {
@@ -20,6 +22,9 @@ export default class CategoryManager {
 	}
 
 	async getById(id) {
+		Validate.id(categoryId, 'categoría')
+		Validate.existID(categoryId, categoryMngr, 'categoría')
+
 		try {
 			return await this.repository.findById(id)
 		} catch (error) {
@@ -31,8 +36,9 @@ export default class CategoryManager {
 		}
 	}
 
-	async create(newCategory) {
+	async create(categoryData) {
 		try {
+			const newCategory = new CategoryDTO(categoryData)
 			const search = await this.repository.findOne(newCategory.name)
 
 			if (search) {
@@ -54,6 +60,9 @@ export default class CategoryManager {
 	}
 
 	async update(id, categoryData) {
+		Validate.id(categoryId, 'categoría')
+		Validate.existID(categoryId, categoryMngr, 'categoría')
+
 		try {
 			await this.repository.updateOne(id, categoryData)
 			return await this.repository.findById(id)
@@ -67,6 +76,9 @@ export default class CategoryManager {
 	}
 
 	async delete(id) {
+		Validate.id(categoryId, 'categoría')
+		Validate.existID(categoryId, categoryMngr, 'categoría')
+		
 		try {
 			const response = await this.repository.findByIdAndDelete(id)
 			if (!response) {

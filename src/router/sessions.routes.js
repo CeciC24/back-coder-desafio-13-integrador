@@ -4,12 +4,17 @@ import passport from 'passport'
 import config from '../config/environment.config.js'
 import AuthManager from '../dao/services/auth.service.js'
 import { authorization } from '../middlewares/auth.middleware.js'
-import { passportCall } from '../utils/jwt.utils.js'
+import { passportCall, validateToken } from '../utils/jwt.utils.js'
 import { CurrentUserDTO } from '../dao/DTOs/user.dto.js'
 import CustomError from '../utils/customError.utils.js'
 import ErrorTypes from '../utils/errorTypes.utils.js'
+import UserManager from '../dao/mongo/users.mongo.js'
+import Validate from '../utils/validate.utils.js'
+import { de } from '@faker-js/faker'
+import { isValidPassword } from '../utils/bcrypt.utils.js'
 
 const SessionsRouter = Router()
+const UsersMngr = new UserManager()
 const authManager = new AuthManager()
 
 // * Current - JWT
@@ -91,6 +96,46 @@ SessionsRouter.post('/restore', async (req, res, next) => {
 		next(error)
 	}
 })
+
+// * Reset - JWT
+SessionsRouter.post('/forgot-password', async (req, res, next) => {
+	try {
+		const { email } = req.body
+		req.logger.info('Solicitud de restablecimiento de contraseña recibida ', email)
+
+		const userToken = await authManager.forgot({ email })
+		res.status(200).send(userToken.message)
+	} catch (error) {
+		next(error)
+	}
+})
+
+SessionsRouter.post('/reset-password', async (req, res, next) => {
+	try {
+		console.log("Entro a reset-password")
+
+		const { password, token } = req.body
+
+		const decodedToken = validateToken(token)
+		if (!decodedToken) {
+			req.logger.error('Token inválido o expirado')
+			return res.redirect('/forgot-password?error=token')
+		}
+
+		const valid = isValidPassword(decodedToken.user, password)
+		if(valid) {
+			req.logger.error('La contraseña no puede ser igual a la anterior')
+			return res.redirect(`http://${config.host}:${config.port}/reset-password?error=password`)
+		}
+
+		await UsersMngr.update(decodedToken.user._id, { password })
+		req.logger.info('Contraseña restablecida correctamente')
+		res.redirect(`http://${config.host}:${config.port}/reset-password?success=true`)
+	} catch (error) {
+		next(error)
+	}
+})
+
 
 // * Login con GitHub
 SessionsRouter.get(

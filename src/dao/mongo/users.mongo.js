@@ -20,9 +20,21 @@ export default class UserManager {
 		}
 	}
 
+	async getBy(field) {
+		try {
+			return await this.repository.findBy(field)
+		} catch (error) {
+			CustomError.createError({
+				name: 'Error al obtener usuario',
+				message: error.message,
+				code: ErrorTypes.ERROR_INTERNAL_ERROR,
+			})
+		}
+	}
+
 	async getById(id) {
 		try {
-			return await this.repository.findById(id)
+			return await this.repository.findBy({ id })
 		} catch (error) {
 			CustomError.createError({
 				name: 'Error al obtener usuario',
@@ -51,7 +63,7 @@ export default class UserManager {
 				userData.password = createHash(userData.password)
 			}
 			await this.repository.updateOne(id, userData)
-			return await this.repository.findById(id)
+			return await this.repository.findBy({ id })
 		} catch (error) {
 			CustomError.createError({
 				name: 'Error al actualizar usuario',

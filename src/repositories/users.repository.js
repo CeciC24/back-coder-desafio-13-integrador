@@ -9,8 +9,8 @@ export default class UsersRepository {
         return await UsersModel.find()
     }
 
-    async findById(id) {
-        return await UsersModel.findById(id)
+    async findBy(field) {
+        return await UsersModel.findOne(field)
     }
 
     async updateOne(id, userData) {

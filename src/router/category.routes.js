@@ -1,27 +1,21 @@
 import { Router } from 'express'
 import CategoryManager from '../dao/mongo/categories.mongo.js'
-import CategoryDTO from '../dao/DTOs/category.dto.js'
-
-import Validate from '../utils/validate.utils.js'
 
 const CategoriesRouter = Router()
 const categoryMngr = new CategoryManager()
 
 CategoriesRouter.get('/', async (req, res, next) => {
 	try {
-		const categories = await categoryMngr.get()
-		res.status(201).json(categories)
+		res.status(201).json(await categoryMngr.get())
 	} catch (error) {
 		next(error)
 	}
 })
 
 CategoriesRouter.get('/:id', async (req, res, next) => {
+	const categoryId = req.params.id
+	
 	try {
-		const categoryId = req.params.id
-		Validate.id(categoryId, 'categoría')
-		Validate.existID(categoryId, categoryMngr, 'categoría')
-
 		res.status(201).json(await categoryMngr.getById(categoryId))
 	} catch (error) {
 		next(error)
@@ -32,19 +26,16 @@ CategoriesRouter.post('/', async (req, res, next) => {
 	const categoryData = req.body
 
 	try {
-		const newCategory = new CategoryDTO(categoryData)
-		res.status(201).json(await categoryMngr.create(newCategory))
+		res.status(201).json(await categoryMngr.create(categoryData))
 	} catch (error) {
 		next(error)
 	}
 })
 
 CategoriesRouter.put('/:id', async (req, res, next) => {
-	try {
-		const categoryId = req.params.id
-		Validate.id(categoryId, 'categoría')
-		Validate.existID(categoryId, categoryMngr, 'categoría')
+	const categoryId = req.params.id
 
+	try {
 		res.status(201).json(await categoryMngr.update(categoryId, req.body))
 	} catch (error) {
 		next(error)
@@ -52,11 +43,9 @@ CategoriesRouter.put('/:id', async (req, res, next) => {
 })
 
 CategoriesRouter.delete('/:id', async (req, res, next) => {
-	try {
-		const categoryId = req.params.id
-		Validate.id(categoryId, 'categoría')
-		Validate.existID(categoryId, categoryMngr, 'categoría')
+	const categoryId = req.params.id
 
+	try {
 		res.status(201).json(await categoryMngr.delete(categoryId))
 	} catch (error) {
 		next(error)

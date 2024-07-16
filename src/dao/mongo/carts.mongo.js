@@ -1,6 +1,7 @@
 import CartsRepository from '../../repositories/carts.repository.js'
 import CustomError from '../../utils/customError.utils.js'
 import ErrorTypes from '../../utils/errorTypes.utils.js'
+import Validate from '../../utils/validate.utils.js'
 import ProductManager from './products.mongo.js'
 import TicketsManager from './tickets.mongo.js'
 
@@ -38,6 +39,8 @@ export default class CartManager {
 
 	async getById(id) {
 		try {
+			Validate.id(cid, 'carrito')
+			await Validate.existID(cid, CartMngr, 'carrito')
 			return await this.repository.findById(id)
 		} catch (error) {
 			CustomError.createError({
@@ -49,6 +52,11 @@ export default class CartManager {
 	}
 
 	async addProductToCart(cid, pid) {
+		Validate.id(cid, 'carrito')
+		await Validate.existID(cid, CartMngr, 'carrito')
+		Validate.id(pid, 'producto')
+		await Validate.existID(pid, ProductMngr, 'producto')
+
 		let cart = await this.getById(cid)
 		let product = await ProductMngr.getById(pid)
 
@@ -82,6 +90,11 @@ export default class CartManager {
 	}
 
 	async deleteProductFromCart(cid, pid) {
+		Validate.id(cid, 'carrito')
+		await Validate.existID(cid, CartMngr, 'carrito')
+		Validate.id(pid, 'producto')
+		await Validate.existID(pid, ProductMngr, 'producto')
+		
 		let cart = await this.getById(cid)
 
 		if (cart) {
@@ -114,6 +127,9 @@ export default class CartManager {
 	}
 
 	async update(cid, newCartProducts) {
+		Validate.id(cid, 'carrito')
+		await Validate.existID(cid, CartMngr, 'carrito')
+
 		try {
 			const cart = await this.getById(cid)
 			await this.empty(cart._id)
@@ -131,6 +147,11 @@ export default class CartManager {
 	}
 
 	async updateProductInCart(cid, pid, newQuantity) {
+		Validate.id(cid, 'carrito')
+		await Validate.existID(cid, CartMngr, 'carrito')
+		Validate.id(pid, 'producto')
+		await Validate.existID(pid, ProductMngr, 'producto')
+
 		let cart = await this.getById(cid)
 		let product = await ProductMngr.getById(pid)
 
@@ -169,6 +190,9 @@ export default class CartManager {
 	}
 
 	async empty(id) {
+		Validate.id(cid, 'carrito')
+		await Validate.existID(cid, CartMngr, 'carrito')
+
 		try {
 			let emptyCart = await this.repository.updateById(id, { products: [] })
 			return await emptyCart.save()
@@ -182,6 +206,9 @@ export default class CartManager {
 	}
 
 	async purchaseCart(id, user) {
+		Validate.id(cid, 'carrito')
+		await Validate.existID(cid, CartMngr, 'carrito')
+		
 		try {
 			let cart = await this.getById(id)
 			let products = cart.products

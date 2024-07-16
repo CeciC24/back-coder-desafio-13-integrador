@@ -1,4 +1,4 @@
-const form = document.getElementById('restoreForm')
+const form = document.getElementById('forgotForm')
 
 form.addEventListener('submit', (e) => {
 	e.preventDefault()
@@ -6,7 +6,9 @@ form.addEventListener('submit', (e) => {
 	const obj = {}
 	data.forEach((value, key) => (obj[key] = value))
 
-	fetch('/api/sessions/restore', {
+	console.log(obj)
+
+	fetch('/api/sessions/forgot-password', {
 		method: 'POST',
 		body: JSON.stringify(obj),
 		headers: {
@@ -15,7 +17,7 @@ form.addEventListener('submit', (e) => {
 	})
 		.then((response) => response.json())
 		.then((json) => {
-			console.log(json)
 			form.reset()
+			console.log(json)
 		})
 })

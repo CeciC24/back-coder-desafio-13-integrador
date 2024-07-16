@@ -17,6 +17,8 @@ import UsersRouter from '../router/users.routes.js'
 
 // Otros router imports
 import EmailsRouter from '../router/email.routes.js'
+import { validateToken } from '../utils/jwt.utils.js'
+import config from './environment.config.js'
 
 const registerRoutes = (app) => {
 	try {

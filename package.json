@@ -5,6 +5,7 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
+    "start": "node src/app.js",
     "dev": "nodemon src/app.js"
   },
   "keywords": [],
@@ -36,8 +37,8 @@
     "winston": "^3.13.0"
   },
   "devDependencies": {
-    "@faker-js/faker": "^8.4.1",
+    "nodemon": "^3.0.3",
     "mongoose": "^8.2.2",
-    "nodemon": "^3.0.3"
+    "@faker-js/faker": "^8.4.1"
   }
 }
