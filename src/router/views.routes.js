@@ -6,9 +6,11 @@ import CartsModel from '../dao/mongo/models/carts.model.js'
 import paginateFormat from '../paginateFormat.js'
 import { requireAuth, redirectIfLoggedIn } from '../middlewares/auth.middleware.js'
 import { passportCall, validateToken } from '../utils/jwt.utils.js'
+import UserManager from '../dao/mongo/users.mongo.js'
 
 const router = Router()
 
+const usersMngr = new UserManager()
 const FSProductMngr = new FSProductManager('src/dao/memory/data/products.json')
 const getFSProducts = FSProductMngr.get()
 
@@ -131,7 +133,10 @@ router.get('/register', passportCall('current'), redirectIfLoggedIn, (req, res) 
 })
 
 router.get('/login', passportCall('current'), redirectIfLoggedIn, (req, res) => {
-	res.render('login')
+	res.render('login', {
+		emailsend: req.query.emailsend,
+		success: req.query.success,
+	})
 })
 
 router.get('/logout', passportCall('current'), requireAuth, (req, res) => {
@@ -160,22 +165,22 @@ router.get('/restore', passportCall('current'), (req, res) => {
 	})
 })
 
-router.get('/reset-password/:token', passportCall('current'), (req, res, next) => {
+router.get('/reset-password/:token', passportCall('current'), async (req, res, next) => {
 	try {
-		const success = req.query.success
-		const error = req.query.error
-
 		const { token } = req.params
 
 		const decodedToken = validateToken(token)
 		if (!decodedToken) return res.redirect('/forgot-password?error=token')
 
+		const email = decodedToken.user.email
+		const actualUser = await usersMngr.getBy({ email })
+		if (actualUser.password != decodedToken.user.password) return res.redirect('/forgot-password?error=token')
+
 		res.render('resetPassword', {
 			title: 'Reset password',
 			style: '../../css/reset.css',
 			auth: req.isAuthenticated(),
-			success,
-			error,
+			error: req.query.error,
 		})
 	} catch (error) {
 		next(error)

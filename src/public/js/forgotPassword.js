@@ -14,10 +14,11 @@ form.addEventListener('submit', (e) => {
 		headers: {
 			'Content-Type': 'application/json',
 		},
+	}).then((response) => {
+		if (response.status === 200) {
+			window.location.href = '/login?emailsend=true'
+		} else {
+			alert('El correo no se encuentra registrado')
+		}
 	})
-		.then((response) => response.json())
-		.then((json) => {
-			form.reset()
-			console.log(json)
-		})
 })

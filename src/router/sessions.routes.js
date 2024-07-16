@@ -110,32 +110,22 @@ SessionsRouter.post('/forgot-password', async (req, res, next) => {
 	}
 })
 
+// TODO: ver manejo de errores
 SessionsRouter.post('/reset-password', async (req, res, next) => {
 	try {
-		console.log("Entro a reset-password")
-
 		const { password, token } = req.body
-
-		const decodedToken = validateToken(token)
-		if (!decodedToken) {
-			req.logger.error('Token inválido o expirado')
-			return res.redirect('/forgot-password?error=token')
-		}
-
-		const valid = isValidPassword(decodedToken.user, password)
-		if(valid) {
-			req.logger.error('La contraseña no puede ser igual a la anterior')
-			return res.redirect(`http://${config.host}:${config.port}/reset-password?error=password`)
-		}
+		
+		Validate.validToken(token)
+		Validate.newPassword(decodedToken.user, password) 
 
 		await UsersMngr.update(decodedToken.user._id, { password })
 		req.logger.info('Contraseña restablecida correctamente')
-		res.redirect(`http://${config.host}:${config.port}/reset-password?success=true`)
+		
+		res.json({ status: 'success', message: 'Contraseña restablecida' })
 	} catch (error) {
 		next(error)
 	}
 })
-
 
 // * Login con GitHub
 SessionsRouter.get(

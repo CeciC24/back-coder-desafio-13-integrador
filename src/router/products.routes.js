@@ -36,10 +36,10 @@ ProductRouter.get('/:pid', async (req, res, next) => {
 		res.status(200).send(product)
 	} catch (error) {
 		next(error)
-	} 
+	}
 })
 
-ProductRouter.post('/', passportCall('current'), authorization('admin'), async (req, res, next) => {
+ProductRouter.post('/', passportCall('current'), authorization(['admin', 'premium']), async (req, res, next) => {
 	try {
 		let productData = req.body
 
@@ -67,12 +67,24 @@ ProductRouter.put('/:pid', passportCall('current'), authorization('admin'), asyn
 	}
 })
 
-ProductRouter.delete('/:pid', passportCall('current'), authorization('admin'), async (req, res, next) => {
+ProductRouter.delete('/:pid', passportCall('current'), authorization(['admin', 'premium']), async (req, res, next) => {
 	let pid = req.params.pid
 
 	try {
 		Validate.id(pid, 'producto')
 		await Validate.existID(pid, ProductMngr, 'producto')
+
+		if (req.user.role == 'premium') {
+			const product = await ProductMngr.getById(pid)
+			if (product.owner != req.user.email) {
+				CustomError.createError({
+					name: 'Error al eliminar producto',
+					message: 'No tienes permisos para eliminar este producto',
+					code: ErrorTypes.ERROR_UNAUTHORIZED,
+					cause: 'Usuario no autorizado',
+				})
+			}
+		}
 		
 		res.status(200).send(await ProductMngr.delete(pid))
 	} catch (error) {
