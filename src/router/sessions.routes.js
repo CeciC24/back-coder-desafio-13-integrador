@@ -110,12 +110,11 @@ SessionsRouter.post('/forgot-password', async (req, res, next) => {
 	}
 })
 
-// TODO: ver manejo de errores
 SessionsRouter.post('/reset-password', async (req, res, next) => {
 	try {
 		const { password, token } = req.body
 
-		const user = Validate.validToken(token)
+		const user = await Validate.validToken(token)
 		Validate.newPassword(user, password)
 
 		await UsersMngr.update(user._id, { password })

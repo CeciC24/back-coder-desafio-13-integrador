@@ -10,13 +10,13 @@ const ProductMngr = new ProductManager()
 const ProductRouter = Router()
 
 ProductRouter.get('/', async (req, res, next) => {
-	let limit = parseInt(req.query.limit)
-	let page = parseInt(req.query.page)
-	let sort = req.query.sort
-	let query = req.query.query ? JSON.parse(req.query.query) : {}
-	let populate = 'category'
-
 	try {
+		let limit = parseInt(req.query.limit)
+		let page = parseInt(req.query.page)
+		let sort = req.query.sort
+		let query = req.query.query ? JSON.parse(req.query.query) : {}
+		let populate = 'category'
+
 		const response = await ProductMngr.getPaginated(page, limit, sort, query, populate)
 
 		return res.status(200).json({ response })
@@ -26,9 +26,9 @@ ProductRouter.get('/', async (req, res, next) => {
 })
 
 ProductRouter.get('/:pid', async (req, res, next) => {
-	let pid = req.params.pid
-
 	try {
+		let pid = req.params.pid
+
 		Validate.id(pid, 'producto')
 		await Validate.existID(pid, ProductMngr, 'producto')
 
@@ -39,12 +39,11 @@ ProductRouter.get('/:pid', async (req, res, next) => {
 	}
 })
 
-// TODO: Manejar error faltan campos
 ProductRouter.post('/', passportCall('current'), authorization(['admin', 'premium']), async (req, res, next) => {
 	try {
 		let productData = req.body
 
-		Validate.productData(productData)
+		await Validate.productData(productData)
 		await Validate.existCode(productData.code, ProductMngr)
 
 		const newProduct = new ProductDTO(productData)
@@ -55,12 +54,12 @@ ProductRouter.post('/', passportCall('current'), authorization(['admin', 'premiu
 })
 
 ProductRouter.put('/:pid', passportCall('current'), authorization(['admin', 'premium']), async (req, res, next) => {
-	let pid = req.params.pid
-	let newField = req.body
-	const user = req.user.user
-	const product = await ProductMngr.getById(pid)
-
 	try {
+		let pid = req.params.pid
+		let newField = req.body
+		const user = req.user.user
+		const product = await ProductMngr.getById(pid)
+
 		Validate.id(pid, 'producto')
 		await Validate.existID(pid, ProductMngr, 'producto')
 		Validate.isOwner(user, product)
@@ -72,11 +71,11 @@ ProductRouter.put('/:pid', passportCall('current'), authorization(['admin', 'pre
 })
 
 ProductRouter.delete('/:pid', passportCall('current'), authorization(['admin', 'premium']), async (req, res, next) => {
-	const pid = req.params.pid
-	const user = req.user.user
-	const product = await ProductMngr.getById(pid)
-
 	try {
+		const pid = req.params.pid
+		const user = req.user.user
+		const product = await ProductMngr.getById(pid)
+
 		Validate.id(pid, 'producto')
 		await Validate.existID(pid, ProductMngr, 'producto')
 		Validate.isOwner(user, product)
