@@ -879,7 +879,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"title\": \"Producto de prueba 13\",\r\n    \"description\": \"Este es el producto de prueba 13\",\r\n    \"code\": \"abc112\",\r\n    \"price\": 1450,\r\n    \"stock\": 24,\r\n    \"category\": \"663c0e7216fa47faa1537deb\"\r\n}",
+							"raw": "{\r\n    \"title\": \"Producto de prueba 13\",\r\n    \"description\": \"Este es el producto de prueba 13\",\r\n    \"code\": \"abc112\",\r\n    \"price\": 1350,\r\n    \"stock\": 24,\r\n    \"category\": \"663c0e7216fa47faa1537deb\",\r\n    \"owner\": \"jbeals@porter.com\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -984,13 +984,13 @@
 					"response": []
 				},
 				{
-					"name": "Modify product",
+					"name": "Modify premium product",
 					"request": {
 						"method": "PUT",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"title\": \"Nuevo nombre del producto 4\",\r\n    \"stock\": 10\r\n}",
+							"raw": "{\r\n    \"title\": \"Nuevo nombre del producto 11\",\r\n    \"stock\": 10\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -998,7 +998,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/api/products/663c0f1d16fa47faa1537df8",
+							"raw": "http://localhost:8080/api/products/663e8c483df427152828fd0b",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -1007,7 +1007,37 @@
 							"path": [
 								"api",
 								"products",
-								"663c0f1d16fa47faa1537df8"
+								"663e8c483df427152828fd0b"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Modify admin product",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"Nuevo nombre del producto 11\",\r\n    \"stock\": 10\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/products/663e8c483df427152828fd0b",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"products",
+								"663e8c483df427152828fd0b"
 							]
 						}
 					},
@@ -1019,7 +1049,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/api/products/663e8be13df427152828fcfc",
+							"raw": "http://localhost:8080/api/products/66972f63f4cf62104d5c9842",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -1028,7 +1058,7 @@
 							"path": [
 								"api",
 								"products",
-								"663e8be13df427152828fcfc"
+								"66972f63f4cf62104d5c9842"
 							]
 						}
 					},
@@ -1584,13 +1614,43 @@
 					"response": []
 				},
 				{
-					"name": "Login",
+					"name": "Login user",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"email\": \"msmith@hogwarts.com\",\r\n    \"password\": \"minerva\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/sessions/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"sessions",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login premium",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"jbeals@porter.com\",\r\n    \"password\": \"tinaaa\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1809,6 +1869,96 @@
 								"api",
 								"sessions",
 								"restore"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reset - Envío de email",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"ceciliacc3@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/sessions/forgot-password",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"sessions",
+								"forgot-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reset - Envío de email | Error: email sin registrar",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"sinRegistrar@mail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/sessions/forgot-password",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"sessions",
+								"forgot-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reset - Cambio de pass",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6IjY2OTVkOWRlN2IxOTllMDhkZDAxZjg5MiIsImZpcnN0X25hbWUiOiJDZWNpIiwibGFzdF9uYW1lIjoiQ292YWxjaHVrIiwiZW1haWwiOiJjZWNpbGlhY2MzQGdtYWlsLmNvbSIsImFnZSI6MjIsInBhc3N3b3JkIjoiJDJiJDEwJEptOHZmYUNWU1pNVDBLUGhLQjJha3VQeW9TclUxbzJjMVVSb25IMEdndzJqb0dnOWw5UFdhIiwicm9sZSI6InByZW1pdW0iLCJfX3YiOjB9LCJpYXQiOjE3MjExNzc3NDQsImV4cCI6MTcyMTE4MTM0NH0.V0U2Y86x1gYHQZ9aeT70q_1zBWssdZ7P2Z3UNShDQOs\",\r\n    \"password\": \"nuevaPass\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/sessions/reset-password",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"sessions",
+								"reset-password"
 							]
 						}
 					},
