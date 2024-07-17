@@ -1,5 +1,6 @@
 export default class ProductDTO {
     constructor(product) {
+        this.owner = product.owner ? product.owner : 'admin'
         this.title = product.title
         this.description = product.description
         this.code = product.code

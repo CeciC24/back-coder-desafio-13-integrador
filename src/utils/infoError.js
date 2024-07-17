@@ -8,7 +8,7 @@ export const generateIDErrorInfo = (pid) => {
 }
 
 export const generateProductErrorInfo = (product) => {
-	const { title, description, code, price, stock, category, ...others } = product
+	const { title, description, code, price, stock, category, owner, thumbnails, ...others } = product
 
 	return `
 
@@ -19,10 +19,11 @@ export const generateProductErrorInfo = (product) => {
     - price: of type Number             - ${price}
     - stock: of type Number             - ${stock}
     - category: of type String          - ${category}
-
+    
     Optional arguments:
-    - thumbnails                        - ${JSON.stringify(others)}
-
+    - thumbnails: of type String array  - ${thumbnails}
+    - owner: of type String             - ${owner}
+    - other fields                      - ${JSON.stringify(others)}
 ------------------------------------------------------------------------------------------
     `
 }

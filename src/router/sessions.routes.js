@@ -104,7 +104,7 @@ SessionsRouter.post('/forgot-password', async (req, res, next) => {
 		req.logger.info('Solicitud de restablecimiento de contraseña recibida ', email)
 
 		const userToken = await authManager.forgot({ email })
-		res.status(200).send(userToken.message)
+		res.status(200).json({ status: "success", message: userToken.message })
 	} catch (error) {
 		next(error)
 	}
@@ -114,13 +114,13 @@ SessionsRouter.post('/forgot-password', async (req, res, next) => {
 SessionsRouter.post('/reset-password', async (req, res, next) => {
 	try {
 		const { password, token } = req.body
-		
-		Validate.validToken(token)
-		Validate.newPassword(decodedToken.user, password) 
 
-		await UsersMngr.update(decodedToken.user._id, { password })
+		const user = Validate.validToken(token)
+		Validate.newPassword(user, password)
+
+		await UsersMngr.update(user._id, { password })
 		req.logger.info('Contraseña restablecida correctamente')
-		
+
 		res.json({ status: 'success', message: 'Contraseña restablecida' })
 	} catch (error) {
 		next(error)

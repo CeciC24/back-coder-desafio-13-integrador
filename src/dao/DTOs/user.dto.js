@@ -5,7 +5,7 @@ export default class UserDTO {
         this.email = user.email
         this.age = user.age
         this.password = user.password
-        this.role = user.role
+        this.role = user.role ? user.role : 'user'
     }
     
     // * Se pide la edad directamente, pero en esta alternativa se calcula a partir de la fecha de nacimiento

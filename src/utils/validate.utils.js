@@ -4,7 +4,9 @@ import ErrorTypes from './errorTypes.utils.js'
 import { generateCodeErrorInfo, generateIDErrorInfo, generateProductErrorInfo } from './infoError.js'
 import { isValidPassword } from './bcrypt.utils.js'
 import { validateToken } from './jwt.utils.js'
+import UsersManager from '../dao/mongo/users.mongo.js'
 
+const UsersMngr = new UsersManager()
 export default class Validate {
 	static id = (id, tipo) => {
 		if (!id) {
@@ -46,7 +48,7 @@ export default class Validate {
 		}
 	}
 
-	static productData = (productData) => {
+	static productData = async (productData) => {
 		if (
 			!productData.title ||
 			!productData.description ||
@@ -67,7 +69,7 @@ export default class Validate {
 			const owner = productData.owner
 
 			if (owner && owner != 'admin') {
-				const user = UsersManager.getBy({ email: owner })
+				const user = await UsersMngr.getBy({ email: owner })
 
 				if (user.role != 'premium') {
 					CustomError.createError({
@@ -77,6 +79,19 @@ export default class Validate {
 						cause: 'El owner no es premium',
 					})
 				}
+			}
+		}
+	}
+
+	static isOwner = (user, product) => {
+		if (user.role == 'premium') {
+			if (product.owner != user.email) {
+				CustomError.createError({
+					name: 'Error al modificar producto',
+					message: 'No tienes permisos para modificar este producto',
+					code: ErrorTypes.ERROR_UNAUTHORIZED,
+					cause: 'Usuario no autorizado',
+				})
 			}
 		}
 	}
@@ -111,6 +126,8 @@ export default class Validate {
 				cause: 'El token no es válido',
 			})
 		}
+
+		return decodedToken.user
 	}
 
 	static newPassword = (user, newPassword) => {
